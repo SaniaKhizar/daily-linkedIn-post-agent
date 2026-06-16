@@ -7,7 +7,7 @@ profile={
     "name": "Sania",
     "niche": "Tech specifically AI and Python",
     "tone": "Professional and impressive",
-    "post_time": "13:54",
+    "post_time": "13:30",
     "language":"English"
 }
 
