@@ -1,3 +1,4 @@
+import random
 from gnews import GNews
 
 def get_trending_topics():
@@ -5,7 +6,18 @@ def get_trending_topics():
     
     titles = []
     
-    queries = ["artificial intelligence", "machine learning"]
+    all_queries = [
+        "artificial intelligence",
+        "machine learning",
+        "python programming",
+        "tech innovation",
+        "AI tools",
+        "data science",
+        "computer vision",
+        "deep learning"
+    ]
+    
+    queries = random.sample(all_queries, 2)
     
     for query in queries:
         results = google_news.get_news(query)
@@ -19,4 +31,3 @@ if __name__ == "__main__":
     print(f"Total topics found: {len(topics)}")
     for i, title in enumerate(topics, 1):
         print(f"{i}. {title}")
-

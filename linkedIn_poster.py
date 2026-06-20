@@ -33,6 +33,14 @@ def post_to_linkedin(post_content):
             "mode": "shareNow"
         }
     }
-    
+
     response = requests.post(url, headers=headers, json={"query": query, "variables": variables})
-    print(response.json())
+    result = response.json()
+    
+    if "errors" in result:
+        print(f"Post failed: {result['errors']}")
+        return False
+    else:
+        print("Post successful!")
+        return True
+    
