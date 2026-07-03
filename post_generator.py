@@ -63,7 +63,7 @@ def generate_post(topics):
     return only the post, nothing else.
     """
     response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
+        model="qwen/qwen3-32b",
         messages=[{"role": "user", "content": prompt}],
         max_tokens=1000
     )
