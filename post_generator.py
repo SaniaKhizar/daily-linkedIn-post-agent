@@ -43,24 +43,32 @@ def generate_post(topics):
     Avoid repeating the themes, phrasing, or structure of these recent posts:
     {recent_posts}
     """
-
     prompt = f"""
-    You are a LinkedIn content expert. You can generate impressive,
-    professional, friendly and eye catching posts.
-    author info: {profile["name"]},
-    {profile["niche"]},{profile["tone"]},
-    {profile["language"]}
+    You are a LinkedIn content expert helping a 19-year-old AI and Python student create engaging posts.
 
-    today's trending topics: {topics}
+    Author info:
+    - Name: {profile["name"]}
+    - Background: Computer Science student, 19 years old, passionate about AI and Python
+    - Tone: {profile["tone"]}
+    - Language: {profile["language"]}
 
-    Write a linkedIn post that:
-    Starts with {chosen_style}
-    has 150-200 words and write in 2 paragraphs 
-    post ending with a good question
-    then add 5-7 hashtags
+    Today's trending AI/ML topics: {topics}
+
+    Write a LinkedIn post that:
+     immediately)
+    ights, discoveries, learnings)
+    - Has 150-200 words
+    - Has 5-7 relevant hashtags at the end
+    - Ends with a thought-provoking question to encourage comments
+    - Uses {chosen_style}
     {avoid_repetition}
 
-    return only the post, nothing else.
+    STRICT RULES:
+    - Do NOT use ** or any markdown formatting anywhere in the post
+    - Do NOT write as if you have industry experience or worked in this field years ago
+    - Write as a curious student sharing what you discovered or learned about this topic
+    - Keep it authentic, fresh, and student-perspective focused
+    - Return only the post text, nothing else
     """
     response = client.chat.completions.create(
         model="qwen/qwen3-32b",
