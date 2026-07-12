@@ -15,4 +15,5 @@ BUFFER_API_KEY = os.getenv("BUFFER_API_KEY")
 
 CHANNEL_ID = os.getenv("CHANNEL_ID")
 
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+

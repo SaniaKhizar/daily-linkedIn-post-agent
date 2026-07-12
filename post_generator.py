@@ -1,10 +1,15 @@
 import random
 import json
 import os
-from groq import Groq
-from config import profile, GROQ_API_KEY
+import time
+import re
+from openai import OpenAI
+from config import profile, OPENROUTER_API_KEY
 
-client = Groq(api_key=GROQ_API_KEY)
+client = OpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key=OPENROUTER_API_KEY
+)
 
 HISTORY_FILE = "post_history.json"
 
@@ -20,12 +25,36 @@ def save_post_to_history(post_text):
     if os.path.exists(HISTORY_FILE):
         with open(HISTORY_FILE, "r") as f:
             history = json.load(f)
-    
     history.append(post_text)
-    history = history[-10:]  
-    
+    history = history[-10:]
     with open(HISTORY_FILE, "w") as f:
         json.dump(history, f, indent=2)
+
+def clean_post(text):
+    # <think> tags remove karo
+    text = re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL)
+
+    # Agar model ne planning/reasoning likhi to sirf actual post lo
+    triggers = ["let's draft", "let's write", "word count", "we need to",
+                "structure:", "hook (", "let's craft", "now count",
+                "we'll", "i'll", "first example", "second example"]
+
+    lower = text.lower()
+    for trigger in triggers:
+        if trigger in lower:
+            paragraphs = [p.strip() for p in text.strip().split('\n\n') if p.strip()]
+            text = '\n\n'.join(paragraphs[-3:])
+            break
+
+    return text.strip()
+
+# Best models pehle — jo seedha post dete hain
+FREE_MODELS = [
+    "openai/gpt-oss-120b:free",
+    "meta-llama/llama-3.3-70b-instruct:free",
+    "google/gemma-4-31b-it:free",
+    "google/gemma-4-26b-a4b-it:free"
+]
 
 def generate_post(topics):
     styles = [
@@ -35,14 +64,15 @@ def generate_post(topics):
         "a short relatable scenario or mini-story as the hook"
     ]
     chosen_style = random.choice(styles)
-    
+
     recent_posts = load_recent_posts()
     avoid_repetition = ""
     if recent_posts:
         avoid_repetition = f"""
-    Avoid repeating the themes, phrasing, or structure of these recent posts:
-    {recent_posts}
-    """
+            Avoid repeating the themes, phrasing, or structure of these recent posts:
+            {recent_posts}
+        """
+
     prompt = f"""
     You are a LinkedIn content expert helping a 19-year-old AI and Python student create engaging posts.
 
@@ -55,39 +85,51 @@ def generate_post(topics):
     Today's trending AI/ML topics: {topics}
 
     Write a LinkedIn post that:
-     immediately)
-    ights, discoveries, learnings)
+    - Starts with a powerful, curiosity-driven hook (first 2-3 lines must grab attention immediately)
+    - Is research and learning based — written from a student's perspective
     - Has 150-200 words
     - Has 5-7 relevant hashtags at the end
-    - Ends with a thought-provoking question to encourage comments
+    - Ends with a thought-provoking question
     - Uses {chosen_style}
     {avoid_repetition}
 
     STRICT RULES:
-    - Do NOT use ** or any markdown formatting anywhere in the post
-    - Do NOT write as if you have industry experience or worked in this field years ago
-    - Write as a curious student sharing what you discovered or learned about this topic
-    - Keep it authentic, fresh, and student-perspective focused
+    - Do NOT use ** or * or any markdown formatting anywhere
+    - Do NOT use <think> tags or show any reasoning
+    - Do NOT write as if you have industry experience
+    - Write as a curious student sharing what you discovered
     - Return only the post text, nothing else
     """
-    response = client.chat.completions.create(
-        model="qwen/qwen3-32b",
-        messages=[{"role": "user", "content": prompt}],
-        max_tokens=1000
-    )
-    
-    post_text = response.choices[0].message.content
-    save_post_to_history(post_text)
-    
-    return post_text
+
+    for model in FREE_MODELS:
+        try:
+            response = client.chat.completions.create(
+                model=model,
+                messages=[
+                    {"role": "system", "content": "You are a LinkedIn post writer. Output ONLY the final LinkedIn post text. No thinking. No planning. No word counts. No explanations. Just the post."},
+                    {"role": "user", "content": prompt}
+                ],
+                max_tokens=1000
+            )
+            post_text = response.choices[0].message.content
+            post_text = clean_post(post_text)
+            save_post_to_history(post_text)
+            return post_text
+
+        except Exception as e:
+            time.sleep(10)
+            continue
+    if post_text == "All models failed. Please try again later.":
+        print("All models failed!")
+        return None
 
 
 if __name__ == "__main__":
     topics = [
-        "Machine learning uncovers 1,750 quakes tracing 250-kilometer edge of Alaska microplate - Phys.org",
-        "How to Fine-Tune an SLM for Emotion Recognition - Towards Data Science",
-        "Anomaly Insights launches AI solution for managed care executives - Fierce Healthcare"
+        "Machine learning uncovers 1,750 quakes",
+        "How to Fine-Tune an SLM for Emotion Recognition",
+        "AI solution for managed care executives"
     ]
-    
     post = generate_post(topics)
     print(post)
+

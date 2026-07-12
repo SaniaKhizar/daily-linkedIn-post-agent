@@ -8,5 +8,6 @@ post = generate_post(topics)
 print("Generated Post:")
 print(post)
 
-
-post_to_linkedin(post)
+post = generate_post(topics)
+if post:
+    post_to_linkedin(post)
