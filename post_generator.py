@@ -74,19 +74,25 @@ def generate_post(topics):
         """
 
     prompt = f"""
-    You are a LinkedIn content expert helping a 19-year-old AI and Python student create engaging posts.
+    You are a LinkedIn content expert helping an AI and CS student create authentic, engaging posts.
 
-    Author info:
+    Author background:
     - Name: {profile["name"]}
-    - Background: Computer Science student, 19 years old, passionate about AI and Python
+    - Currently in 5th semester of Computer Science
+    - Completed subjects: Programming fundamentals, OOP, Data Structures, Computer Architecture, Discrete Math, Linear Algebra, Calculus, Digital Logic Design, Database Systems
+    - Currently learning: Machine Learning basics, AI fundamentals
+    - Has basic understanding of: Deep Learning concepts
+    - Just starting to explore: AI Automation, RAG (Retrieval Augmented Generation)
+    - Passionate about Python and AI
     - Tone: {profile["tone"]}
     - Language: {profile["language"]}
 
     Today's trending AI/ML topics: {topics}
 
     Write a LinkedIn post that:
-    - Starts with a powerful, curiosity-driven hook (first 2-3 lines must grab attention immediately)
-    - Is research and learning based — written from a student's perspective
+    - Starts with a powerful hook (first 2-3 lines must grab attention)
+    - Reflects a genuine student learning journey — curiosity, discovery, questions
+    - Connects the trending topic to something relatable from CS coursework or current learning
     - Has 150-200 words
     - Has 5-7 relevant hashtags at the end
     - Ends with a thought-provoking question
@@ -94,10 +100,11 @@ def generate_post(topics):
     {avoid_repetition}
 
     STRICT RULES:
-    - Do NOT use ** or * or any markdown formatting anywhere
-    - Do NOT use <think> tags or show any reasoning
-    - Do NOT write as if you have industry experience
-    - Write as a curious student sharing what you discovered
+    - Do NOT use ** or * or any markdown formatting
+    - Do NOT use <think> tags or show reasoning
+    - Do NOT exaggerate skills — write honestly as someone still learning
+    - Do NOT claim to have done research, projects, or work not mentioned above
+    - Sound like a curious CS student, not an industry expert
     - Return only the post text, nothing else
     """
 
@@ -114,14 +121,16 @@ def generate_post(topics):
             post_text = response.choices[0].message.content
             post_text = clean_post(post_text)
             save_post_to_history(post_text)
+            print(f"Success with model: {model}")
             return post_text
 
         except Exception as e:
+            print(f"{model} failed: {e}")
             time.sleep(10)
             continue
-    if post_text == "All models failed. Please try again later.":
-        print("All models failed!")
-        return None
+            
+    print("All models failed!")
+    return None
 
 
 if __name__ == "__main__":
