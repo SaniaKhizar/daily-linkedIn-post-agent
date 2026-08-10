@@ -2,6 +2,8 @@
 
 An autonomous AI agent that scrapes daily AI/ML trends, generates context-aware LinkedIn posts using LLMs, and publishes them automatically — zero manual intervention.
 
+**Status:** ✅ Live and deployed via GitHub Actions, running Mon/Wed/Fri.
+
 ## How It Works
 
 ```
@@ -44,6 +46,7 @@ GitHub Actions runs this automatically every day
 ├── scheduler.py        # Local scheduling alternative
 ├── get_channel_id.py   # Utility to fetch Buffer channel ID
 ├── config.py           # Configuration and environment variables
+├── post_history.json   # Tracks recent posts to avoid repetition
 └── .github/
     └── workflows/
         └── daily_post.yml  # GitHub Actions workflow
@@ -96,5 +99,10 @@ The workflow runs automatically on schedule (Mon, Wed, Fri).
 4. LLM generates a 150-200 word post from student perspective
 5. Post saved to history and published via Buffer API
 
+## Engineering Notes
+
+- Handles Buffer's GraphQL union response type correctly (`PostActionSuccess` / `MutationError`) instead of relying on generic error checks, so post failures are detected and logged accurately instead of silently reporting success
+- GitHub Actions workflow persists post history back to the repo via automated commits, with rebase-based conflict handling to avoid race conditions between local and CI runs
+- Multi-model fallback chain (OpenRouter) — if one free-tier model is rate-limited or deprecated, the pipeline automatically retries with the next available model
 
 📂 [GitHub](https://github.com/SaniaKhizar) | 🔗 [LinkedIn](https://www.linkedin.com/in/sania-khizar-4296b3414)
