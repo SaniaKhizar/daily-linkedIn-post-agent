@@ -44,7 +44,6 @@ GitHub Actions runs this automatically every day
 ├── scheduler.py        # Local scheduling alternative
 ├── get_channel_id.py   # Utility to fetch Buffer channel ID
 ├── config.py           # Configuration and environment variables
-├── post_history.json   # Tracks recent posts to avoid repetition
 └── .github/
     └── workflows/
         └── daily_post.yml  # GitHub Actions workflow
