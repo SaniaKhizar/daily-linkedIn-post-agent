@@ -36,4 +36,5 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add post_history.json
           git commit -m "update post history" || echo "No changes to commit"
+          git pull --rebase origin main
           git push
