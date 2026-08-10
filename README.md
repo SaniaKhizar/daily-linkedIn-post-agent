@@ -97,8 +97,5 @@ The workflow runs automatically on schedule (Mon, Wed, Fri).
 4. LLM generates a 150-200 word post from student perspective
 5. Post saved to history and published via Buffer API
 
-## Built By
 
-**Sania Hayat** — CS Student | AI Engineering Enthusiast
-
-📂 [GitHub](https://github.com/SaniaKhizar) | 🔗 [LinkedIn](https://www.linkedin.com/in/sania-hayat-909937414)
+📂 [GitHub](https://github.com/SaniaKhizar) | 🔗 [LinkedIn](https://www.linkedin.com/in/sania-khizar-4296b3414)
