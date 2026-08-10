@@ -37,10 +37,14 @@ def post_to_linkedin(post_content):
     response = requests.post(url, headers=headers, json={"query": query, "variables": variables})
     result = response.json()
     
-    if "errors" in result:
-        print(f"Post failed: {result['errors']}")
+    create_post = result.get("data", {}).get("createPost", {})
+
+    if "message" in create_post:
+        print(f"Post failed: {create_post['message']}")
         return False
-    else:
+    elif "post" in create_post:
         print("Post successful!")
         return True
-    
+    else:
+        print(f"Unexpected response: {result}")
+        return False

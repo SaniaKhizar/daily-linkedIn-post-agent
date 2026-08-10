@@ -34,7 +34,6 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git remote set-url origin https://github.com/SaniaKhizar/daily-linkedIn-post-agent.git
           git add post_history.json
           git commit -m "update post history" || echo "No changes to commit"
           git push
